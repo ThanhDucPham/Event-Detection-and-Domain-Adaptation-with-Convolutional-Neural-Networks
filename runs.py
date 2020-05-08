@@ -132,6 +132,17 @@ if __name__ == "__main__":
                                    prefix='dev set, step {}/{}'.format(global_step, ep))
                 test_results = evaluate(config, test_dataset, model, word2id,
                                         prefix='test set, step {}/{}'.format(global_step, ep))
+
+                for key, value in results.items():
+                    if key != 'loss':
+                        tb_writer.add_scalar("{} score".format(key), value, global_step)
+                tb_writer.add_scalar("learning rate", scheduler.get_last_lr()[0], global_step)
+                tb_writer.add_scalars("loss", {'train_loss': (tr_loss - logging_loss) / config.nstep_logging,
+                                               'dev_loss': results['loss']}, global_step)
+
+                logging_loss = tr_loss
+
+
                 if test_results['f1'] > f1_test:
                     f1_test = test_results['f1']
                     print('-->Test new best score! f1_test = ', f1_test)
@@ -147,14 +158,7 @@ if __name__ == "__main__":
                             results['precision'],
                             results['recall'],
                             results['f1']))
-                    for key, value in results.items():
-                        if key != 'loss':
-                            tb_writer.add_scalar("{} score".format(key), value, global_step)
-                    tb_writer.add_scalar("learning rate", scheduler.get_last_lr()[0], global_step)
-                    tb_writer.add_scalars("loss", {'train_loss': (tr_loss - logging_loss) / config.nstep_logging,
-                                                   'dev_loss': results['loss']}, global_step)
 
-                    logging_loss = tr_loss
 
                 else:
                     with open(os.path.join(config.output_dir, log_name), 'a', encoding='utf-8') as f:
