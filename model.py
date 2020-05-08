@@ -5,7 +5,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torch.optim.lr_scheduler import LambdaLR
-from Event.GCN_2018.utils import load_vocab
+from utils import load_vocab
 
 class Config(object):
     def __init__(self):
