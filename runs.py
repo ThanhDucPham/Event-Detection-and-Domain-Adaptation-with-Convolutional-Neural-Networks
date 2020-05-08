@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
     print('--> Load vocab: ')
     word2id = load_vocab('data/vocab_word.txt')
-    event2id = load_vocab('data/vocab_event_2.txt', False)
-    entity2id = load_vocab('data/vocab_ne_2.txt')
+    event2id = load_vocab('data/vocab_event.txt', False)
+    entity2id = load_vocab('data/vocab_ner_tail.txt')
     nwords, word2id, id2word, pretrained_embeddings = load_trimmed_word2vec('data/trimmed_word2vec_new.txt')
     # print('Data preparation')
     # word2id.update({'PAD': 0})
@@ -55,10 +55,11 @@ if __name__ == "__main__":
     config.eval_batch_size = 128
     config.batch_size = 50
     config.learning_rate = 5e-3
-    config.num_epoch = 60
+    config.num_epoch = 300
     config.warmup_steps = 4000
     config.window_size = 15
     config.fine_tune = True
+    config.change_lr_steps = 4000
 
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
@@ -86,7 +87,7 @@ if __name__ == "__main__":
     tensorboard_name = 'model_1.ckpt'
     train_sampler = RandomSampler(train_dataset)
     train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=config.batch_size)
-    total_steps = len(train_loader) * config.num_epoch
+    total_steps = int(len(train_loader) / config.change_lr_steps * config.num_epoch) + 1
     config.warmup_steps = total_steps // 5
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=config.warmup_steps,
                                                 num_training_steps=total_steps)
@@ -122,8 +123,7 @@ if __name__ == "__main__":
             if global_step % config.change_lr_steps == 0:
                 scheduler.step()
 
-            if config.nstep_logging > 0 and (
-                    global_step % config.nstep_logging == 0 or step == len(train_iterator) - 1):
+            if config.nstep_logging > 0 and global_step % config.nstep_logging == 0: # or step == len(train_iterator) - 1):
                 print('lr = {}\n'.format(optimizer.param_groups[0]['lr']))
                 # print(loss)
 
