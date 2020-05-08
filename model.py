@@ -7,6 +7,7 @@ from torch.nn import functional as F
 from torch.optim.lr_scheduler import LambdaLR
 from utils import load_vocab
 
+
 class Config(object):
     def __init__(self):
         self.num_epoch = 5
@@ -23,7 +24,7 @@ class Config(object):
 
         self.window_size = 15
         self.max_sent = self.window_size * 2 + 1
-        self.kernel_size = 3
+        self.kernel_sizes = [2, 3, 4, 5]
         self.nfeature_maps = 150
         self.dropout_rate = 0.5
         self.entity_dim = 50
@@ -31,7 +32,6 @@ class Config(object):
         self.max_l2norm = 3
         self.norm_type = 2
         self.dropout = 0.5
-        self.num_cnn_layers = 2
         self.num_hidden_layers = 2
         self.use_highway = True
         self.vocab_word_size = 14078
@@ -81,6 +81,7 @@ class Config(object):
             np.random.seed(seed)
             torch.manual_seed(seed)
             torch.cuda.manual_seed(seed)
+
 
 
 def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps, last_epoch=-1):

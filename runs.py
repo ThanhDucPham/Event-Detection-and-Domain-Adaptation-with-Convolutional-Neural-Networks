@@ -35,9 +35,9 @@ if __name__ == "__main__":
     #                    window_size=31, save=False, prefix='data/loaddata/{}_'.format(op))
 
     print('-> Load data')
-    train_data = load_data_pickle('data/dev_data.pkl', max_sent=31)
-    dev_data = load_data_pickle('data/dev_data.pkl', max_sent=31)
-    test_data = load_data_pickle('data/test_data.pkl', max_sent=31)
+    train_data = load_data_pickle('data/out/train_data.pkl', max_sent=31)
+    dev_data = load_data_pickle('data/out/dev_data.pkl', max_sent=31)
+    test_data = load_data_pickle('data/out/test_data.pkl', max_sent=31)
 
     train_dataset = TensorDataset(*train_data)
     dev_dataset = TensorDataset(*dev_data)
@@ -63,8 +63,11 @@ if __name__ == "__main__":
 
     if not os.path.exists(config.output_dir):
         os.makedirs(config.output_dir)
+    print(collections.Counter(train_data[3].numpy()))
+    print(list(range(len(config.vocab_event))))
     weightsLoss_classes = compute_class_weight('balanced', classes=list(range(len(config.vocab_event))),
                                                y=train_data[3].numpy())
+
     model = CNNModel(config,
                      class_weights=torch.from_numpy(weightsLoss_classes).type(torch.float32).to(config.device),
                      pretrained_embeddings=torch.tensor(pretrained_embeddings, dtype=torch.float32))
