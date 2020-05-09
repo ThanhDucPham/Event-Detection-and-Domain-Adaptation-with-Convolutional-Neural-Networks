@@ -5,7 +5,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torch.optim.lr_scheduler import LambdaLR
-from utils import load_vocab
+from Event.CNN.utils import load_vocab
 
 
 class Config(object):
@@ -81,8 +81,6 @@ class Config(object):
             np.random.seed(seed)
             torch.manual_seed(seed)
             torch.cuda.manual_seed(seed)
-
-
 
 def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps, last_epoch=-1):
     """ Create a schedule with a learning rate that decreases linearly after

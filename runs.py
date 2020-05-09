@@ -8,8 +8,8 @@ import numpy as np
 import torch
 from torch import optim
 from torch.utils.tensorboard import SummaryWriter
-from utils import *
-from model import *
+from Event.CNN.utils import *
+from Event.CNN.model import *
 from sklearn.utils.class_weight import compute_class_weight
 
 if __name__ == "__main__":

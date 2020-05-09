@@ -128,7 +128,8 @@ def encode_window(tokens, anchors, entities, deps, word2id=None, event2id=None, 
                 else:
                     w_window.append(word2id.get(sent[i + tok].lower(), unk_id))
                     e_window.append(entity2id[entities_sent[i+tok]])
-                    p_window.append(abs(i)+1)
+                    # p_window.append(abs(i)+1)
+                    p_window.append(i+ window_size + 1)
 
 
             data['position_ids'].append(p_window)
@@ -343,5 +344,5 @@ if __name__ == "__main__":
     print(event2id)
     for op in ['dev','test', 'train']:
         print('-->opt: ', op)
-        words_sents, lab_triggers_sents, entities_sents, dep_sents = load_data_json('data/{}.json'.format(op))
-        encode_window(words_sents, lab_triggers_sents, entities_sents, dep_sents, word2id, vocab_event, entity2id, window_size=15, save=True, prefix='data/{}_'.format(op))
+        words_sents, lab_triggers_sents, entities_sents, dep_sents = load_data_json('data/sdata/{}.json'.format(op))
+        encode_window(words_sents, lab_triggers_sents, entities_sents, dep_sents, word2id, vocab_event, entity2id, window_size=15, save=True, prefix='data/out/{}_'.format(op))
