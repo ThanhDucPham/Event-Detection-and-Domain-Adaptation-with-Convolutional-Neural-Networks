@@ -10,14 +10,14 @@ from utils import load_vocab
 
 class Config(object):
     def __init__(self):
-        self.num_epoch = 5
-        self.learning_rate = 0.01
+        self.num_epoch = 100
+        self.learning_rate = 1e-3
         self.weight_decay = 1e-4
         self.adam_eps = 1e-8
         self.batch_size = 50
         self.eval_batch_size = 128
         self.nstep_logging = 500
-        self.warmup_steps = 2000
+        self.warmup_steps = 8000
         self.change_lr_steps = 100
         self.max_restart = 4
         self.seed = 150
@@ -138,7 +138,7 @@ class CNNModel(nn.Module):
         self.ner_embeddings = nn.Embedding(config.num_class_entities, config.entity_dim, padding_idx=0,
                                            max_norm=config.max_l2norm, norm_type=config.norm_type)
 
-        self.position_embeddings = nn.Embedding(config.window_size + 2, config.position_dim, padding_idx=0,
+        self.position_embeddings = nn.Embedding(2 * config.window_size + 2, config.position_dim, padding_idx=0,
                                                 max_norm=config.max_l2norm,
                                                 norm_type=config.norm_type)  # vocab_position: pad_idx + window_size + center
 
@@ -151,12 +151,6 @@ class CNNModel(nn.Module):
         self.dropout = nn.ModuleList()
         for _ in range(4):
             self.dropout.append(nn.Dropout(config.dropout))
-
-        # self.hidden_layers = nn.ModuleList()
-        # for _ in range(config.num_hidden_layers):
-        #     self.hidden_layers.append(HighWay(dim=config.nfeature_maps * len(config.kernel_sizes),
-        #                                       use_highway=config.use_highway,
-        #                                       dropout=config.dropout))
 
         self.classifier = nn.Linear(in_features=config.nfeature_maps * len(config.kernel_sizes) + 300,
                                     out_features=config.num_class_events)
@@ -187,6 +181,7 @@ class CNNModel(nn.Module):
         cnn_out = self.dropout[3](cnn_out)
         cnn_out = torch.cat((cnn_out, word_embeddings[:, self.config.window_size]), dim=-1)
         logits = self.classifier(cnn_out)
+
         outputs = (logits,)
         if labels is not None:
             loss = self.loss_func(logits, labels)

@@ -56,7 +56,6 @@ if __name__ == "__main__":
     config.batch_size = 50
     config.learning_rate = 5e-3
     config.num_epoch = 300
-    config.warmup_steps = 4000
     config.window_size = 15
     config.fine_tune = True
     config.change_lr_steps = 4000
@@ -85,9 +84,10 @@ if __name__ == "__main__":
     logging_loss, tr_loss = 0., 0.
     epoch_improve = 0.
     restart_used = 0
-    model_name = 'model_gcn_2018.ckpt'
-    log_name = 'log_gcn2018.txt'
-    tensorboard_name = 'model_1.ckpt'
+    model_name = 'model_cnn2015.ckpt'
+    log_name = 'log_cnn2015.txt'
+    tensorboard_name = 'model_cnn2015.ckpt'
+
     train_sampler = RandomSampler(train_dataset)
     train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=config.batch_size)
     total_steps = int(len(train_loader) / config.change_lr_steps * config.num_epoch) + 1
@@ -95,7 +95,6 @@ if __name__ == "__main__":
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=config.warmup_steps,
                                                 num_training_steps=total_steps)
     tb_writer = SummaryWriter(os.path.join(config.output_dir, tensorboard_name))
-    identity_matrix = torch.eye(config.max_sent).unsqueeze(0)
 
     print('-> Start training process')
     print('nepoch: ', config.num_epoch)
@@ -110,7 +109,6 @@ if __name__ == "__main__":
             model.train()
             model.zero_grad()
             batch = tuple(t.to(config.device) for t in batch)
-            identity_matrix_batch = identity_matrix.repeat(batch[1].shape[0], 1, 1).to(config.device)
 
             inputs = {"input_ids": batch[0],
                       "input_ners": batch[1],

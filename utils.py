@@ -282,14 +282,13 @@ def evaluate(config, eval_dataset, model, id2word, prefix=""):
     out_label_ids = None
     ori_sent_ids = None
     model.eval()
-    identity_matrix = torch.eye(config.max_sent).unsqueeze(0).to(config.device)
 
     for batch in eval_dataloader:
         batch = tuple(t.to(config.device) for t in batch)
 
         with torch.no_grad():
             # input model1
-            identity_matrix_batch = identity_matrix.repeat(batch[1].shape[0], 1, 1)
+
             inputs = {"input_ids": batch[0],
                       "input_ners": batch[1],
                       "input_positions": batch[2],
