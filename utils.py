@@ -230,11 +230,11 @@ def load_data_pickle(fpath, max_sent=31):
     :return:
         data: includes 5 tensors:
             - word_ids: data_size, max_sent
-            - out_adjacency matrix: sparse tensor matrix: data_size, max_sent, max_sent
-            - inverse adjacency matrix : inverse edge in depency graph, sparse tensor matrix:
             - entity_ids: data_size, max_sent
-            - labels: data_size, max_sent
-
+            - position_ids: data_size,max_sent [[0,0,15,16,17,18,..],..]
+            - labels: data_size, max_sent                ^
+                                                         ||
+                                                 Current trigger predict
     """
     with open(fpath, 'rb') as f:
         data = pickle.load(f)
